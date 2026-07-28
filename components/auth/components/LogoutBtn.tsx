@@ -4,7 +4,12 @@ import { signOut } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
 import { LucideLogOut } from "lucide-react";
 
-export function LogoutButton() {
+type LogoutButtonProps = {
+    className?: string;
+    iconSize?: number;
+};
+
+export function LogoutButton({ className, iconSize = 16 }: LogoutButtonProps) {
     const router = useRouter();
 
     const handleLogout = async () => {
@@ -13,9 +18,11 @@ export function LogoutButton() {
         router.refresh();
     };
 
-    return (<button
-        onClick={handleLogout} className="flex gap-2 items-center cursor-pointer text-sm px-2 py-1 rounded-md hover:bg-muted transition-colors">
-        <LucideLogOut className="w-4 h-4" />
-        <span className="">Logout</span>
-    </button>)
+    return (
+        <button
+            onClick={handleLogout} className={`flex gap-1 items-center cursor-pointer px-1 rounded-md transition-colors ${className}`} >
+            <LucideLogOut size={iconSize} />
+            <span className="">Logout</span>
+        </button >
+    )
 }
