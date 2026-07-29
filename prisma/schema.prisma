@@ -20,8 +20,12 @@ model User {
   image         String?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
-  sessions      Session[]
-  accounts      Account[]
+  sessions         Session[]
+  accounts         Account[]
+  captures         Capture[]
+  playbooks        Playbook[]
+  topics           Topic[]
+  knowledgeEntries KnowledgeEntry[]
 
   @@unique([email])
   @@map("user")
@@ -73,4 +77,78 @@ model Verification {
 
   @@index([identifier])
   @@map("verification")
+}
+
+model Capture {
+  id  String @id @default(cuid())
+  userId String
+  playbookId String?
+
+  text String?
+
+  files Json?
+
+  status CaptureStatus @default(PENDING)
+
+  createdAt DateTime
+  updatedAt DateTime @updatedAt
+
+  user         User       @relation(fields: [userId], references: [id])
+  playbook     Playbook?  @relation(fields: [playbookId], references: [id])
+
+}
+
+enum CaptureStatus {
+  PENDING
+  PROCESSING
+  PROCESSED
+  FAILED
+}
+
+model Playbook {
+  id String @id @default(cuid())
+  userId String
+
+  title String
+
+  topics    Topic[]
+  captures  Capture[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user         User       @relation(fields: [userId], references: [id])
+}
+
+model Topic {
+  id String @id @default(cuid())
+  userId String
+  playbookId String
+
+
+  title String
+
+  knowledgeEntries KnowledgeEntry[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id])
+  playbook Playbook @relation(fields: [playbookId], references:[id])
+}
+
+model KnowledgeEntry {
+  id String @id @default(cuid())
+  userId String
+  topicId String
+
+
+  title String
+  content String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id])
+  topic Topic @relation(fields: [topicId], references: [id])
 }
