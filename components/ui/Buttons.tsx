@@ -19,7 +19,7 @@ export const Button = ({
   return (
     <Link
       href={href}
-      className={`flex cursor-pointer items-center rounded-lg bg-black px-5 py-3 text-sm text-white`}
+      className={className + `flex cursor-pointer items-center rounded-lg bg-black px-5 py-3 text-sm text-white`}
     >
       {text}
       {Icon && <Icon className="h-4 w-4" />}

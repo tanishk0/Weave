@@ -6,15 +6,19 @@ import { PlaybookItem } from "./PlaybookItems";
 
 interface Playbook {
   id: string;
-  name: string;
+  title: string;
 }
 
 interface PlaybooksProps {
   playbooks: Playbook[];
+  onDeletePlaybook?: (id: string) => void;
+  onEditPlaybook?: (id: string, newTitle: string) => void;
 }
 
 export function Playbooks({
   playbooks,
+  onDeletePlaybook,
+  onEditPlaybook,
 }: PlaybooksProps) {
   const [collapsed, setCollapsed] = useState(false);
 
@@ -43,7 +47,9 @@ export function Playbooks({
             <PlaybookItem
               key={playbook.id}
               id={playbook.id}
-              name={playbook.name}
+              name={playbook.title}
+              onDelete={onDeletePlaybook}
+              onEdit={onEditPlaybook}
             />
           ))}
         </div>

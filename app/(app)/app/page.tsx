@@ -4,11 +4,13 @@ import { SearchBar } from "@/components/ui/SearchBar";
 import { getSession } from "@/lib/auth";
 import { BellCheck } from "lucide-react";
 import { redirect } from "next/navigation";
+import { PlaybookActions } from "@/components/Playbooks/PlaybookActions";
 
 export default async function Home() {
+
     const session = await getSession();
-    if(!session) redirect("/login");
-    
+    if (!session) redirect("/login");
+
     return (
         <div className="p-6 flex flex-col justify-between h-full">
             <div className="flex justify-between items-center">
@@ -19,7 +21,9 @@ export default async function Home() {
                     <SearchBar />
                 </div>
             </div>
-            <Composer />
+            <div className="flex justify-center w-full h-full items-center">
+                <PlaybookActions />
+            </div>
         </div>
     )
 }
