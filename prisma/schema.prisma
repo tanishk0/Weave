@@ -140,7 +140,7 @@ model Topic {
 model KnowledgeEntry {
   id String @id @default(cuid())
   userId String
-  topicId String
+  topicId String?
 
 
   title String
@@ -151,5 +151,5 @@ model KnowledgeEntry {
   updatedAt DateTime @updatedAt
 
   user User @relation(fields: [userId], references: [id])
-  topic Topic @relation(fields: [topicId], references: [id])
+  topic Topic? @relation(fields: [topicId], references: [id])
 }

@@ -2,6 +2,7 @@ import { DottedBackground } from "@/components/common/DottedBackground";
 import { BookOpen } from "lucide-react";
 import {getSession} from "@/lib/auth";
 import {redirect} from "next/navigation";
+import { Composer } from "@/components/composer/Composer";
 
 export default async function PlaybookPage() {
     try{
@@ -17,12 +18,13 @@ export default async function PlaybookPage() {
         redirect("/login");
     }
     return (
-        <div className="w-screen h-screen bg-red-200 p-20">
+        <div className="w-screen h-screen p-20">
             <DottedBackground enableSpotlight={false} />
-            <div className="flex items-center justify-between w-full">
+            <div className="flex flex-col items-center justify-between w-full h-full bg-red-200">
                 <h1 className="flex items-center gap-2 text-lg font-medium">
-                    
+                    Hello
                 </h1>
+                <Composer />
             </div>
         </div>
     );

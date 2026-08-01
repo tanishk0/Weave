@@ -1,13 +1,25 @@
 import { UnstructuredClient } from "unstructured-client";
 import { Strategy } from "unstructured-client/sdk/models/shared";
 
+function getUnstructuredServerURL(): string | undefined {
+  let url = process.env.UNSTRUCTURED_SERVER_URL || process.env.UNSTRUCTURED_API_URL;
+  if (!url) {
+    return "https://api.unstructuredapp.io";
+  }
+  // Fix web dashboard domain if accidentally provided
+  if (url.includes("platform.unstructuredapp.io")) {
+    url = url.replace("platform.unstructuredapp.io", "api.unstructuredapp.io");
+  }
+  // Strip trailing /api/v1 or trailing slashes since the SDK appends /general/v0/general
+  url = url.replace(/\/api\/v1\/?$/, "").replace(/\/+$/, "");
+  return url || "https://api.unstructuredapp.io";
+}
+
 const client = new UnstructuredClient({
   security: {
     apiKeyAuth: process.env.UNSTRUCTURED_API_KEY || "",
   },
-  ...(process.env.UNSTRUCTURED_SERVER_URL
-    ? { serverURL: process.env.UNSTRUCTURED_SERVER_URL }
-    : {}),
+  serverURL: getUnstructuredServerURL(),
 });
 
 /**
@@ -18,6 +30,7 @@ export async function parseFile(file: File): Promise<string> {
   try {
     const arrayBuffer = await file.arrayBuffer();
     const buffer = new Uint8Array(arrayBuffer);
+    console.log(`[Unstructured] Parsing file: ${file.name} (${file.type}, ${file.size} bytes)`);
 
     const response = await client.general.partition({
       partitionParameters: {
@@ -28,6 +41,8 @@ export async function parseFile(file: File): Promise<string> {
         strategy: Strategy.Auto,
       },
     });
+
+    console.log("[Unstructured] Partition call successful");
 
     if (Array.isArray(response)) {
       return response

@@ -75,29 +75,23 @@ export const Composer = () => {
 
   const handleSend = async () => {
     if (!text.trim() && files.length === 0) return;
+
     try {
       setIsSubmitting(true);
-      let uploadedFileData: { name: string; url: string; type: string }[] = [];
 
-      if (files.length > 0) {
-        const uploadRes = await startUpload(files);
+      const formData = new FormData();
 
-        if (uploadRes) {
-          uploadedFileData = uploadRes.map((f) => ({
-            name: f.name,
-            url: f.url,
-            type: f.type,
-          }));
-        }
-      }
+      formData.append("text", text);
+
+      files.forEach((file) => {
+        formData.append("files", file);
+      });
+
       const response = await fetch("/api/captures", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          text,
-          files: uploadedFileData,
-        }),
+        body: formData,
       });
+
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
         throw new Error(errorData.error || "Failed to save capture");
@@ -118,11 +112,10 @@ export const Composer = () => {
       onDragOver={handleDragOver}
       onDragEnter={handleDragEnter}
       onDragLeave={handleDragLeave}
-      className={`flex items-end gap-4 rounded-xl border-2 p-4 transition ${
-        isDragging
-          ? "border-blue-500 bg-blue-50"
-          : "border-zinc-300 bg-white"
-      }`}
+      className={`flex items-end gap-4 rounded-xl border-2 p-4 transition ${isDragging
+        ? "border-blue-500 bg-blue-50"
+        : "border-zinc-300 bg-white"
+        }`}
     >
       {/* Left Section */}
       <div className="flex-1">
