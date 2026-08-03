@@ -7,6 +7,7 @@ import { ComposerFileList } from "./ComposerFileList";
 import { ComposerMicButton } from "./ComposerMicButton";
 import { ComposerPaperclipButton } from "./ComposerPaperclipButton";
 import { ComposerSendButton } from "./ComposerSendButton";
+import { useParams } from "next/navigation";
 
 export const Composer = () => {
   const [text, setText] = useState("");
@@ -15,6 +16,9 @@ export const Composer = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const { startUpload } = useUploadThing("mediaUploader");
+
+  const params = useParams();
+  const playbookId = params.id as string;
 
   const removeFile = (indexToRemove: number) => {
     setFiles((prev) => prev.filter((_, index) => index !== indexToRemove));
@@ -87,7 +91,7 @@ export const Composer = () => {
         formData.append("files", file);
       });
 
-      const response = await fetch("/api/captures", {
+      const response = await fetch(`/api/playbook/${playbookId}/capture`, {
         method: "POST",
         body: formData,
       });

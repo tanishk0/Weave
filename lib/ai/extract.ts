@@ -1,16 +1,38 @@
 // lib/ai/extract.ts
 
 import { GoogleGenAI } from "@google/genai";
-import { EXTRACT_PROMPT } from "./prompts";
+import { CAPTURE_PROMPT } from "./prompts";
 
 const ai = new GoogleGenAI({
   apiKey: process.env.GEMINI_API_KEY!,
 });
 
-export async function extractKnowledge(text: string) {
+export interface ProcessCaptureResult {
+  title: string;
+  markdown: string;
+  topic: string;
+}
+
+export async function processCapture(
+  text: string,
+  existingTopics: string[]
+): Promise<ProcessCaptureResult> {
+  const topicsList = existingTopics.length > 0 ? existingTopics.join(", ") : "None";
+
+  const prompt = `${CAPTURE_PROMPT}
+
+Existing Topics in this Playbook:
+${topicsList}
+
+Input Text:
+${text}`;
+
   const response = await ai.models.generateContent({
-    model: "gemini-3.5-flash-lite",
-    contents: `${EXTRACT_PROMPT}\n\nInput:\n${text}`,
+    model: "gemini-2.5-flash",
+    contents: prompt,
+    config: {
+      responseMimeType: "application/json",
+    },
   });
 
   const output = response.text?.trim();
@@ -20,8 +42,9 @@ export async function extractKnowledge(text: string) {
   }
 
   try {
-    return JSON.parse(output);
+    return JSON.parse(output) as ProcessCaptureResult;
   } catch {
-    throw new Error("AI returned invalid JSON");
+    const cleaned = output.replace(/```json/g, "").replace(/```/g, "").trim();
+    return JSON.parse(cleaned) as ProcessCaptureResult;
   }
-}
+}

@@ -20,7 +20,7 @@ export default async function PlaybookPage() {
     return (
         <div className="w-screen h-screen p-20">
             <DottedBackground enableSpotlight={false} />
-            <div className="flex flex-col items-center justify-between w-full h-full bg-red-200">
+            <div className="flex flex-col items-center justify-between w-full h-full     bg-red-200">
                 <h1 className="flex items-center gap-2 text-lg font-medium">
                     Hello
                 </h1>
