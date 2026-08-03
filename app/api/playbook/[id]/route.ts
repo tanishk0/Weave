@@ -81,3 +81,59 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
         );
     }
 }
+
+// Fetch playbook, all topics and knowledge entries
+export async function GET(
+    req: Request,
+    { params }: { params: Promise<{ id: string }> }
+) {
+    try {
+        const session = await getSession();
+
+        if (!session) {
+            return NextResponse.json(
+                { error: "Unauthorized: Please login first" },
+                { status: 401 }
+            );
+        }
+
+        const { id } = await params;
+
+        if (!id) {
+            return NextResponse.json(
+                { error: "Playbook ID is required" },
+                { status: 400 }
+            );
+        }
+
+        const playbook = await prisma.playbook.findFirst({
+            where: { id, userId: session.user.id },
+            include: {
+                topics: {
+                    include: {
+                        knowledgeEntries: {
+                            orderBy: { createdAt: "desc" },
+                        },
+                    },
+                    orderBy: { createdAt: "asc" },
+                },
+            },
+        });
+
+        if (!playbook) {
+            return NextResponse.json({ error: "Not found" }, { status: 404 });
+        }
+
+        return NextResponse.json({
+            success: true,
+            playbook,
+            topics: playbook.topics,
+        });
+    } catch (error: any) {
+        console.error("Failed to fetch playbook content:", error);
+        return NextResponse.json(
+            { error: error?.message || "Failed to fetch playbook content" },
+            { status: 500 }
+        );
+    }
+}

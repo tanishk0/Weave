@@ -18,7 +18,7 @@ export const ComposerTextarea = ({
       value={value}
       onChange={onChange}
       placeholder="Paste anything here..."
-      className="w-full resize-none overflow-hidden border-none text-md outline-none placeholder:font-medium placeholder:text-zinc-400"
+      className="w-full resize-none overflow-y-auto border-none text-md outline-none placeholder:font-medium placeholder:text-zinc-400"
     />
   );
 };
