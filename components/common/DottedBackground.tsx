@@ -31,10 +31,10 @@ export function DottedBackground({ enableSpotlight = true }: DottedBackgroundPro
   }, [isHovered, enableSpotlight]);
 
   return (
-    <>
+    <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">
       {/* Infinite Canvas Base Dotted Background (Always Subtle) */}
       <div
-        className="fixed inset-0 pointer-events-none -z-1"
+        className="fixed inset-0 pointer-events-none"
         style={{
           backgroundImage: "radial-gradient(rgba(44, 44, 44, 0.2) 1.3px, transparent 1.3px)",
           backgroundSize: "24px 24px",
@@ -44,7 +44,7 @@ export function DottedBackground({ enableSpotlight = true }: DottedBackgroundPro
       {/* Mouse Spotlight Layer */}
       {enableSpotlight && (
         <div
-          className="fixed inset-0 pointer-events-none z-0 transition-opacity duration-300"
+          className="fixed inset-0 pointer-events-none transition-opacity duration-300"
           style={{
             opacity: isHovered ? 1 : 0,
             backgroundImage: "radial-gradient(rgba(0, 0, 0, 0.28) 1.4px, transparent 1.4px)",
@@ -57,11 +57,11 @@ export function DottedBackground({ enableSpotlight = true }: DottedBackgroundPro
 
       {/* Viewport Edge Fade / Horizon Vignette */}
       <div
-        className="fixed inset-0 pointer-events-none -z-1"
+        className="fixed inset-0 pointer-events-none"
         style={{
           background: "radial-gradient(circle at 50% 45%, transparent 55%, rgba(255, 255, 255, 0.85) 100%)",
         }}
       />
-    </>
+    </div>
   );
 }

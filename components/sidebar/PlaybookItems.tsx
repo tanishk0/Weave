@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { BookOpen, MoreVertical, Pencil, Trash2 } from "lucide-react";
 
 interface PlaybookItemProps {
@@ -19,6 +19,7 @@ export function PlaybookItem({
   onEdit,
 }: PlaybookItemProps) {
   const pathname = usePathname();
+  const router = useRouter();
   const [menuOpen, setMenuOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editTitle, setEditTitle] = useState(name);
@@ -62,6 +63,9 @@ export function PlaybookItem({
   const handleDelete = () => {
     setMenuOpen(false);
     onDelete?.(id);
+    if (active) {
+      router.push("/app");
+    }
   };
 
   useEffect(() => {
@@ -98,7 +102,7 @@ export function PlaybookItem({
 
   return (
     <div
-      className={`group relative flex items-center justify-between gap-2 rounded-md px-3 py-2 text-sm transition ${active ? "bg-zinc-100 font-medium" : "hover:bg-zinc-200"
+      className={`group relative flex items-center justify-between gap-2 rounded-md px-3 py-2 text-xs transition ${active ? "bg-zinc-100 font-medium" : "hover:bg-zinc-200"
         }`}
     >
       <Link href={href} className="flex items-center gap-2 min-w-0 flex-1">
@@ -118,12 +122,12 @@ export function PlaybookItem({
             }`}
           aria-label="More options"
         >
-          <MoreVertical size={14} />
+          <MoreVertical size={12} />
         </button>
 
         {menuOpen && (
           <div
-            className="absolute right-7 top-0 w-32 rounded-md border border-zinc-200 bg-white py-1 shadow-lg z-50 text-sm"
+            className="absolute right-7 top-0 w-32 rounded-md border border-zinc-200 bg-white py-1 shadow-lg z-50 text-xs"
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();

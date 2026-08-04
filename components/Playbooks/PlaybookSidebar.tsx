@@ -29,7 +29,7 @@ export function PlaybookSidebar({
   loading = false,
 }: PlaybookSidebarProps) {
   return (
-    <div className="w-72 border-r border-slate-200 bg-white p-4 overflow-y-auto flex flex-col gap-4 shrink-0 h-full">
+    <div className="w-52 border border-slate-300 bg-white p-4 overflow-y-auto flex flex-col gap-4 shrink-0 m-4 rounded-md"> 
       <h2 className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
         Topics & Entries
       </h2>
@@ -45,7 +45,7 @@ export function PlaybookSidebar({
       ) : (
         topics.map((topic) => (
           <div key={topic.id} className="flex flex-col gap-1">
-            <div className="flex items-center gap-1.5 text-xs font-bold text-slate-700 px-2 py-1 bg-slate-100 rounded-md">
+            <div className="flex items-center gap-1.5 text-xs font-semibold text-slate-700 px-2 py-1 bg-slate-100 rounded-md">
               <FolderOpen className="w-3.5 h-3.5 text-slate-500" />
               <span>{topic.title}</span>
             </div>

@@ -116,7 +116,7 @@ export const Composer = () => {
       onDragOver={handleDragOver}
       onDragEnter={handleDragEnter}
       onDragLeave={handleDragLeave}
-      className={`flex items-end gap-4 rounded-xl border-2 p-4 transition ${isDragging
+      className={`flex items-end gap-4 rounded-md border-2 p-4 transition ${isDragging
         ? "border-blue-500 bg-blue-50"
         : "border-zinc-300 bg-white"
         }`}

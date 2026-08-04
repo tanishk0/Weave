@@ -28,6 +28,14 @@ export async function DELETE(req: Request, { params }: { params: Promise<{ id: s
             return NextResponse.json({ error: "Not found" }, { status: 404 });
         }
 
+        await prisma.knowledgeEntry.deleteMany({
+            where: { topic: { playbookId: id } },
+        });
+
+        await prisma.topic.deleteMany({
+            where: { playbookId: id },
+        });
+
         await prisma.playbook.delete({
             where: { id },
         });
@@ -43,7 +51,7 @@ export async function DELETE(req: Request, { params }: { params: Promise<{ id: s
 }
 
 export async function PATCH(req: Request, { params }: { params: Promise<{ id: string }> }) {
-    try{
+    try {
         const session = await getSession();
 
         if (!session) {
@@ -73,7 +81,7 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
         });
 
         return NextResponse.json({ success: true });
-    }catch(error: any) {
+    } catch (error: any) {
         console.error("Failed to update playbook:", error);
         return NextResponse.json(
             { error: error?.message || "Failed to update playbook" },
@@ -136,4 +144,4 @@ export async function GET(
             { status: 500 }
         );
     }
-}
+}

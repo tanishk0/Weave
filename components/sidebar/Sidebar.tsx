@@ -18,7 +18,7 @@ export const Sidebar = () => {
     };
 
     return (
-        <div className="h-full w-64 bg-white shadow-sm border-r border-slate-200 flex flex-col p-4 justify-between">
+        <div className="h-full w-52 bg-white shadow-sm border-r border-slate-200 flex flex-col p-4 justify-between">
             <div className="flex flex-col justify-between">
                 <div className="flex justify-end">
                     <NewButton className="w-full" onClick={() => setIsModalOpen(true)} />

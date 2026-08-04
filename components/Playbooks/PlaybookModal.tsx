@@ -23,7 +23,7 @@ export const PlaybookModal = ({ onClose, onCreate }: PlaybookModalProps) => {
                         value={title}
                         onChange={(e) => setTitle(e.target.value)}
                         placeholder="Playbook name"
-                        className="p-2 outline-none border border-gray-400 rounded-md my-3 text-sm"
+                        className="p-2 outline-none border border-slate-200 rounded-md my-3 text-sm"
                     />
 
                     <div className="flex">

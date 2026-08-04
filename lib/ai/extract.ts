@@ -2,6 +2,7 @@
 
 import { GoogleGenAI } from "@google/genai";
 import { CAPTURE_PROMPT } from "./prompts";
+import { chunkText } from "./chunk";
 
 const ai = new GoogleGenAI({
   apiKey: process.env.GEMINI_API_KEY!,
@@ -13,7 +14,7 @@ export interface ProcessCaptureResult {
   topic: string;
 }
 
-export async function processCapture(
+async function processSingleChunk(
   text: string,
   existingTopics: string[]
 ): Promise<ProcessCaptureResult> {
@@ -28,7 +29,7 @@ Input Text:
 ${text}`;
 
   const response = await ai.models.generateContent({
-    model: "gemini-2.5-flash",
+    model: "gemini-3.1-flash-lite",
     contents: prompt,
     config: {
       responseMimeType: "application/json",
@@ -47,4 +48,26 @@ ${text}`;
     const cleaned = output.replace(/```json/g, "").replace(/```/g, "").trim();
     return JSON.parse(cleaned) as ProcessCaptureResult;
   }
-}
+}
+
+export async function processCapture(
+  text: string,
+  existingTopics: string[]
+): Promise<ProcessCaptureResult> {
+  const chunks = await chunkText(text);
+
+  if (chunks.length === 1) {
+    return processSingleChunk(chunks[0], existingTopics);
+  }
+
+  // Process each chunk through AI
+  const results = await Promise.all(
+    chunks.map((chunk) => processSingleChunk(chunk, existingTopics))
+  );
+
+  return {
+    title: results[0].title,
+    topic: results[0].topic,
+    markdown: results.map((r) => r.markdown).join("\n\n---\n\n"),
+  };
+}
