@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
 import { parseFile } from "@/lib/parser/unstructured";
 import { processCapture } from "@/lib/ai/extract";
+import { chooseTopic } from "@/lib/ai/topic";
 
 export async function POST(
     req: Request,
@@ -34,24 +35,29 @@ export async function POST(
             },
         });
 
-        // Single AI call to extract title, markdown, and suggested topic
+        // Extract the knowledge first, then classify it against the current topics.
         console.time("processCapture");
-        const aiResult = await processCapture(
-            extractedText,
-            existingTopics.map((t) => t.title)
-        );
+        const aiResult = await processCapture(extractedText);
         console.timeEnd("processCapture");
 
-        // DB check: Does suggested topic exist?
-        const suggestedTopicName = aiResult.topic.trim();
-        let topic = existingTopics.find(
-            (t) => t.title.toLowerCase() === suggestedTopicName.toLowerCase()
+        const topicDecision = await chooseTopic(
+            `${aiResult.title}\n\n${aiResult.markdown}`,
+            existingTopics.map((topic) => topic.title)
         );
+
+        const selectedTopicName = topicDecision.topic.trim();
+        let topic = existingTopics.find(
+            (candidate) => candidate.title.toLocaleLowerCase() === selectedTopicName.toLocaleLowerCase()
+        );
+
+        if (topicDecision.action === "existing" && !topic) {
+            throw new Error("AI selected an existing topic that is no longer available");
+        }
 
         if (!topic) {
             topic = await prisma.topic.create({
                 data: {
-                    title: suggestedTopicName,
+                    title: selectedTopicName,
                     playbookId,
                     userId: session.user.id,
                 },
@@ -63,6 +69,7 @@ export async function POST(
             data: {
                 text: extractedText,
                 userId: session.user.id,
+                playbookId,
                 createdAt: new Date(),
             },
         });

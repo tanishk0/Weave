@@ -142,7 +142,6 @@ model KnowledgeEntry {
   userId String
   topicId String?
 
-
   title String
   content String
   images Json?

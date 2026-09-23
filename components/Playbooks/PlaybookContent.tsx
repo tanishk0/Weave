@@ -4,22 +4,27 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { Composer } from "@/components/composer/Composer";
 import { FileText } from "lucide-react";
-import { KnowledgeEntry } from "./PlaybookSidebar";
-import { DottedBackground } from "../common/DottedBackground";
+import { Topic } from "./PlaybookSidebar";
 
 interface PlaybookContentProps {
-  entry: KnowledgeEntry | null;
+  topic: Topic | null;
+  onCaptureComplete?: () => void;
 }
 
-export function PlaybookContent({ entry }: PlaybookContentProps) {
+export function PlaybookContent({ topic, onCaptureComplete }: PlaybookContentProps) {
+  const combinedContent = topic?.knowledgeEntries
+    .map((entry) => entry.content.trim())
+    .filter(Boolean)
+    .join("\n\n");
+
   return (
     <div className="flex-1 flex flex-col h-full relative overflow-hidden">
       {/* Content Viewer Area */}
       <div className="flex-1 overflow-y-auto p-8 relative z-10 ">
-        {entry ? (
+        {topic ? (
           <div className="max-w-3xl mx-auto flex flex-col gap-4 bg-white/90 backdrop-blur-xs p-6 rounded-xl border border-slate-200/80 shadow-xs">
             <h2 className="text-2xl font-bold text-slate-900 border-b pb-3 border-slate-200">
-              {entry.title}
+              {topic.title}
             </h2>
             <article className="prose prose-slate max-w-none text-slate-700 leading-relaxed space-y-4">
               <ReactMarkdown
@@ -47,7 +52,7 @@ export function PlaybookContent({ entry }: PlaybookContentProps) {
                   ),
                 }}
               >
-                {entry.content}
+                {combinedContent}
               </ReactMarkdown>
             </article>
           </div>
@@ -55,7 +60,7 @@ export function PlaybookContent({ entry }: PlaybookContentProps) {
           <div className="h-full flex flex-col items-center justify-center text-slate-600 gap-2">
             <FileText className="w-10 h-10 stroke-1" />
             <p className="text-sm font-medium">
-              Select a knowledge entry from the sidebar to view its content.
+              Select a topic to view its knowledge.
             </p>
           </div>
         )}
@@ -64,10 +69,9 @@ export function PlaybookContent({ entry }: PlaybookContentProps) {
       {/* Bottom Composer */}
       <div className="p-4 border-t border-slate-200/80 bg-white/80 backdrop-blur-md flex justify-center shrink-0 relative z-10">
         <div className="w-full">
-          <Composer />
+          <Composer onCaptureComplete={onCaptureComplete} />
         </div>
       </div>
     </div>
   );
 }
-

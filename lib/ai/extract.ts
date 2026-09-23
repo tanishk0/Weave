@@ -11,19 +11,12 @@ const ai = new GoogleGenAI({
 export interface ProcessCaptureResult {
   title: string;
   markdown: string;
-  topic: string;
 }
 
 async function processSingleChunk(
-  text: string,
-  existingTopics: string[]
+  text: string
 ): Promise<ProcessCaptureResult> {
-  const topicsList = existingTopics.length > 0 ? existingTopics.join(", ") : "None";
-
   const prompt = `${CAPTURE_PROMPT}
-
-Existing Topics in this Playbook:
-${topicsList}
 
 Input Text:
 ${text}`;
@@ -51,23 +44,25 @@ ${text}`;
 }
 
 export async function processCapture(
-  text: string,
-  existingTopics: string[]
+  text: string
 ): Promise<ProcessCaptureResult> {
   const chunks = await chunkText(text);
 
+  if (!chunks.length) {
+    throw new Error("No text was provided for knowledge extraction");
+  }
+
   if (chunks.length === 1) {
-    return processSingleChunk(chunks[0], existingTopics);
+    return processSingleChunk(chunks[0]);
   }
 
   // Process each chunk through AI
   const results = await Promise.all(
-    chunks.map((chunk) => processSingleChunk(chunk, existingTopics))
+    chunks.map((chunk) => processSingleChunk(chunk))
   );
 
   return {
     title: results[0].title,
-    topic: results[0].topic,
     markdown: results.map((r) => r.markdown).join("\n\n---\n\n"),
   };
 }

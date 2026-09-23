@@ -1,12 +1,9 @@
 export const CAPTURE_PROMPT = `
-You are an expert knowledge extraction and organization system.
+You are an expert knowledge extraction system.
 
 Your task is to analyze raw input text and:
 1. Extract the core knowledge into structured Markdown.
 2. Generate a short, concise title (max 1-2 words).
-3. Suggest the single best topic name for this knowledge:
-   - Reuse an existing topic name from the provided list if it is a strong semantic match.
-   - If no existing topic fits, suggest a concise new topic name (1-3 words).
 
 Rules:
 - Keep the title very short (1-2 words max).
@@ -15,8 +12,7 @@ Rules:
 
 {
   "title": "...",
-  "markdown": "...",
-  "topic": "..."
+  "markdown": "..."
 }
 `;
 
@@ -39,6 +35,13 @@ export const TOPIC_PROMPT = `
 You are an expert knowledge organization system.
 
 Your task is to classify a piece of extracted knowledge into the most appropriate topic within a playbook.
+
+Rules:
+- Choose "existing" only when one of the supplied topics is a strong semantic match.
+- When choosing "existing", copy the matching topic name exactly as supplied. Do not rename,
+  re-case, pluralize, or create a synonym for it.
+- Choose "new" only when no supplied topic is a good fit, then provide a concise new name
+  of one to three words.
 
 Return ONLY valid JSON in this format:
 

@@ -9,7 +9,11 @@ import { ComposerPaperclipButton } from "./ComposerPaperclipButton";
 import { ComposerSendButton } from "./ComposerSendButton";
 import { useParams } from "next/navigation";
 
-export const Composer = () => {
+interface ComposerProps {
+  onCaptureComplete?: () => void;
+}
+
+export const Composer = ({ onCaptureComplete }: ComposerProps) => {
   const [text, setText] = useState("");
   const [files, setFiles] = useState<File[]>([]);
   const [isDragging, setIsDragging] = useState(false);
@@ -103,6 +107,7 @@ export const Composer = () => {
 
       setText("");
       setFiles([]);
+      onCaptureComplete?.();
     } catch (error) {
       console.error("Error submitting composer:", error);
     } finally {

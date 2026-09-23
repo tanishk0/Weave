@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { PlaybookSidebar, Topic, KnowledgeEntry } from "./PlaybookSidebar";
+import { PlaybookSidebar, Topic } from "./PlaybookSidebar";
 import { PlaybookContent } from "./PlaybookContent";
 import { Sidebar } from "../sidebar/Sidebar";
 import { PlaybookProvider } from "@/context/PlaybookContext";
@@ -16,7 +16,7 @@ interface PlaybookContainerProps {
 function PlaybookContainerInner({ playbookId }: PlaybookContainerProps) {
   const [topics, setTopics] = useState<Topic[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedEntry, setSelectedEntry] = useState<KnowledgeEntry | null>(null);
+  const [selectedTopic, setSelectedTopic] = useState<Topic | null>(null);
 
   const router = useRouter();
 
@@ -31,11 +31,11 @@ function PlaybookContainerInner({ playbookId }: PlaybookContainerProps) {
       const data = await res.json();
       if (data.topics) {
         setTopics(data.topics);
-        // Select first entry if none is selected
-        const firstEntry = data.topics?.[0]?.knowledgeEntries?.[0];
-        if (firstEntry && !selectedEntry) {
-          setSelectedEntry(firstEntry);
-        }
+        setSelectedTopic((currentTopic) =>
+          data.topics.find((topic: Topic) => topic.id === currentTopic?.id) ??
+          data.topics[0] ??
+          null
+        );
       }
     } catch (err) {
       console.error("Failed to load playbook topics:", err);
@@ -54,11 +54,11 @@ function PlaybookContainerInner({ playbookId }: PlaybookContainerProps) {
       <Sidebar />
       <PlaybookSidebar
         topics={topics}
-        selectedEntryId={selectedEntry?.id}
-        onSelectEntry={(entry) => setSelectedEntry(entry)}
+        selectedTopicId={selectedTopic?.id}
+        onSelectTopic={setSelectedTopic}
         loading={loading}
       />
-      <PlaybookContent entry={selectedEntry} />
+      <PlaybookContent topic={selectedTopic} onCaptureComplete={fetchPlaybook} />
     </div>
   );
 }
@@ -70,4 +70,3 @@ export function PlaybookContainer(props: PlaybookContainerProps) {
     </PlaybookProvider>
   );
 }
-
